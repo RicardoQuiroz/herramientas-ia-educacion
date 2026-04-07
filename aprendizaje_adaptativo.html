@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprendizaje Adaptativo - Diagrama de Flujo Interactivo</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            overflow: hidden;
+        }
+        h1 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin: 0 0 8px 0;
+            text-align: center;
+            font-size: 1.3em;
+        }
+
+        /* ===== FIXED TOOLBAR ===== */
+        .toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: white;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.25);
+            padding: 7px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: nowrap;
+            height: 44px;
+        }
+        .toolbar label {
+            font-weight: 600;
+            color: #444;
+            font-size: 12px;
+        }
+        .color-palette {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+        .color-swatch {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: transform 0.15s;
+            flex-shrink: 0;
+        }
+        .color-swatch:hover { transform: scale(1.15); }
+        .color-swatch.active {
+            border-color: #333;
+            transform: scale(1.1);
+            box-shadow: 0 0 6px rgba(0,0,0,0.3);
+        }
+        .btn {
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 11px;
+            transition: transform 0.15s;
+            flex-shrink: 0;
+        }
+        .btn:hover { transform: scale(1.05); }
+        .btn-reset {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+        .btn-zoom {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 26px;
+            height: 26px;
+            padding: 0;
+            border-radius: 50%;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .zoom-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .zoom-level {
+            font-weight: 700;
+            color: #667eea;
+            min-width: 36px;
+            text-align: center;
+            font-size: 12px;
+        }
+        .instructions {
+            margin-left: auto;
+            background: #f0f0ff;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 10px;
+            color: #555;
+            white-space: nowrap;
+        }
+        .instructions strong { color: #667eea; }
+
+        /* ===== MAIN VIEWPORT ===== */
+        .main-viewport {
+            position: fixed;
+            top: 44px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: calc(100vh - 44px);
+            overflow: auto;
+            margin: 0;
+            padding: 0;
+            border: none;
+            outline: none;
+        }
+        .main-viewport::-webkit-scrollbar { width: 8px; height: 8px; }
+        .main-viewport::-webkit-scrollbar-track { background: #eee; }
+        .main-viewport::-webkit-scrollbar-thumb { background: #aaa; border-radius: 4px; }
+        .main-viewport.pan-mode { cursor: grab; }
+        .main-viewport.grabbing { cursor: grabbing !important; }
+
+        .main-inner {
+            transform-origin: top left;
+            display: flex;
+            min-width: fit-content;
+            background: white;
+        }
+
+        /* ===== DIAGRAM AREA ===== */
+        .diagram-area {
+            padding: 15px;
+            background: #fff;
+            border: none;
+            min-height: 100%;
+        }
+        .mermaid { display: inline-block; }
+        .mermaid svg { display: block; }
+
+        /* ===== SIDE PANEL ===== */
+        .side-panel {
+            width: 340px;
+            min-width: 340px;
+            padding: 18px 16px;
+            background: linear-gradient(180deg, #f8f8ff 0%, #f0f0f8 100%);
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+            border-left: 2px solid #e0e0e0;
+        }
+        .side-panel h2 {
+            color: #667eea;
+            font-size: 16px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #667eea;
+        }
+        .route-card {
+            background: white;
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #667eea;
+            cursor: pointer;
+            transition: box-shadow 0.2s, transform 0.1s;
+        }
+        .route-card:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            transform: translateY(-1px);
+        }
+        .route-card.highlighted {
+            border-left-color: #ffd32a;
+            box-shadow: 0 0 0 2px #ffd32a, 0 4px 15px rgba(255,211,42,0.3);
+        }
+        .route-card .route-name {
+            font-weight: 700;
+            font-size: 15px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .route-card .route-emoji {
+            font-size: 17px;
+            margin-right: 5px;
+        }
+        .route-card .route-profile {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 6px;
+        }
+        .route-card .route-example {
+            font-size: 14px;
+            color: #444;
+            line-height: 1.45;
+        }
+        .side-panel .panel-hint {
+            margin-top: auto;
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        /* ===== TABLE BELOW ===== */
+        .table-container {
+            background: white;
+            padding: 24px;
+            margin-top: 0;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px;
+            text-align: left;
+            font-size: 14px;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+            vertical-align: top;
+            font-size: 14px;
+        }
+        tr:hover { background-color: #f5f5ff; }
+        h3 { color: #667eea; margin-top: 0; font-size: 16px; }
+
+        /* ===== NODE/EDGE CURSORS ===== */
+        .node rect, .node polygon, .node circle { cursor: pointer; }
+        .edgePath path { cursor: pointer; stroke-width: 2.5px !important; }
+    </style>
+</head>
+<body>
+
+    <!-- FIXED TOOLBAR -->
+    <div class="toolbar">
+        <label>🎨 Color:</label>
+        <div class="color-palette" id="colorPalette">
+            <div class="color-swatch active" data-color="#e74c3c" style="background:#e74c3c;"></div>
+            <div class="color-swatch" data-color="#3498db" style="background:#3498db;"></div>
+            <div class="color-swatch" data-color="#2ecc71" style="background:#2ecc71;"></div>
+            <div class="color-swatch" data-color="#f39c12" style="background:#f39c12;"></div>
+            <div class="color-swatch" data-color="#9b59b6" style="background:#9b59b6;"></div>
+            <div class="color-swatch" data-color="#1abc9c" style="background:#1abc9c;"></div>
+            <div class="color-swatch" data-color="#e91e63" style="background:#e91e63;"></div>
+            <div class="color-swatch" data-color="#00bcd4" style="background:#00bcd4;"></div>
+            <div class="color-swatch" data-color="#ff5722" style="background:#ff5722;"></div>
+            <div class="color-swatch" data-color="#607d8b" style="background:#607d8b;"></div>
+        </div>
+        <button class="btn btn-reset" id="btnReset">🔄 Resetear</button>
+        <div class="zoom-group">
+            <label>🔍</label>
+            <button class="btn btn-zoom" id="zoomOut">−</button>
+            <span class="zoom-level" id="zoomLevel">120%</span>
+            <button class="btn btn-zoom" id="zoomIn">+</button>
+            <button class="btn btn-reset" id="zoomFit" style="background:linear-gradient(135deg,#667eea,#764ba2);">Ajustar</button>
+        </div>
+        <div class="instructions">
+            <strong>Aprendizaje Adaptativo - Rutas Personalizadas</strong> 
+        </div>
+    </div>
+
+    <!-- MAIN VIEWPORT -->
+    <div class="main-viewport" id="mainViewport">
+        <div class="main-inner" id="mainInner">
+            <div class="diagram-area">
+                <pre class="mermaid">
+graph TD
+    Tema[Tema X] --> Eval{Evaluación diagnóstica}
+    Eval -->|Bajo desempeño| Ruta1[Ruta 1<br/>Contenido remedial<br/>Ejercicios guiados]
+    Eval -->|Desempeño medio| Ruta2[Ruta 2<br/>Contenido estándar<br/>Práctica equilibrada]
+    Eval -->|Alto desempeño| Ruta3[Ruta 3<br/>Contenido avanzado<br/>Retos complejos]
+    Eval -->|Otro perfil| RutaN[Ruta N<br/>Ruta personalizada<br/>...]
+
+    Ruta1 --> ReEval1{Re-evaluación}
+    Ruta2 --> ReEval2{Re-evaluación}
+    Ruta3 --> ReEval3{Re-evaluación}
+    RutaN --> ReEvalN{Re-evaluación}
+
+    ReEval1 -->|Éxito| Fin[✅ Dominio del tema]
+    ReEval1 -->|Sin cambio| Eval2{Elige nueva ruta}
+
+    ReEval2 -->|Éxito| Fin
+    ReEval2 -->|Sin cambio| Eval2
+    ReEval2 -->|Baja| Eval2
+
+    ReEval3 -->|Éxito| Fin
+    ReEval3 -->|Sin cambio| Eval2
+    ReEval3 -->|Baja| Eval2
+
+    ReEvalN -->|Éxito| Fin
+    ReEvalN -->|Sin cambio| Eval2
+
+    Eval2 -->|Ruta 1| Ruta1
+    Eval2 -->|Ruta 2| Ruta2
+    Eval2 -->|Ruta 3| Ruta3
+    Eval2 -->|Ruta N| RutaN
+                </pre>
+            </div>
+            <div class="side-panel">
+                <h2>📋 Ejemplos de actividades por ruta</h2>
+                <div class="route-card" data-route="Ruta1">
+                    <div class="route-name"><span class="route-emoji">🎥</span>Ruta 1 — Contenido guiado</div>
+                    <div class="route-profile">Perfil: necesita refuerzo, aprendizaje lento</div>
+                    <div class="route-example">Video tutorial pausado + ejercicios con retroalimentación inmediata + simulaciones interactivas con pistas</div>
+                </div>
+                <div class="route-card" data-route="Ruta2">
+                    <div class="route-name"><span class="route-emoji">📖</span>Ruta 2 — Contenido equilibrado</div>
+                    <div class="route-profile">Perfil: ritmo normal, comprensión estándar</div>
+                    <div class="route-example">Lectura interactiva + cuestionarios de comprensión + ejercicios de aplicación práctica</div>
+                </div>
+                <div class="route-card" data-route="Ruta3">
+                    <div class="route-name"><span class="route-emoji">🧩</span>Ruta 3 — Retos complejos</div>
+                    <div class="route-profile">Perfil: avanzado, alto rendimiento</div>
+                    <div class="route-example">Resolución de problemas abiertos + proyectos de investigación + debates y análisis de casos reales</div>
+                </div>
+                <div class="route-card" data-route="RutaN">
+                    <div class="route-name"><span class="route-emoji">🎮</span>Ruta N — Ruta personalizada</div>
+                    <div class="route-profile">Perfil: estilo diferente, intereses específicos</div>
+                    <div class="route-example">Gamificación + proyectos creativos + contenido auditivo/visual/kinestésico según perfil</div>
+                </div>
+                <div class="panel-hint">💡 Ricardo Augusto Quiroz Gutiérrez <br> 💌 ricardo.quiroz@yahoo.com</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        var currentZoom = 70;
+        var MIN_ZOOM = 25;
+        var MAX_ZOOM = 400;
+        var ZOOM_STEP = 10;
+        var originalEdgeStyles = {};
+
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: false,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        var pollCount = 0;
+        var pollTimer = setInterval(function() {
+            pollCount++;
+            var svg = document.querySelector('.mermaid svg');
+            if (svg || pollCount > 60) {
+                clearInterval(pollTimer);
+                setupAll();
+            }
+        }, 100);
+
+        function setupAll() {
+            var svg = document.querySelector('.mermaid svg');
+            var mainInner = document.getElementById('mainInner');
+            var viewport = document.getElementById('mainViewport');
+            var zoomLevelEl = document.getElementById('zoomLevel');
+            var selectedColor = '#e74c3c';
+            if (!svg) return;
+
+            // ===== COLOR SWATCHES =====
+            var swatches = document.querySelectorAll('.color-swatch');
+            for (var i = 0; i < swatches.length; i++) {
+                (function(swatch) {
+                    swatch.addEventListener('click', function() {
+                        var allS = document.querySelectorAll('.color-swatch');
+                        for (var j = 0; j < allS.length; j++) allS[j].classList.remove('active');
+                        swatch.classList.add('active');
+                        selectedColor = swatch.getAttribute('data-color');
+                    });
+                })(swatches[i]);
+            }
+
+            // ===== RESET =====
+            document.getElementById('btnReset').addEventListener('click', function() {
+                var nodes = document.querySelectorAll('.node');
+                for (var i = 0; i < nodes.length; i++) {
+                    var nid = nodes[i].id;
+                    if (originalEdgeStyles[nid]) {
+                        var shapes = nodes[i].querySelectorAll('rect, polygon, circle');
+                        for (var j = 0; j < shapes.length; j++) {
+                            shapes[j].style.stroke = originalEdgeStyles[nid];
+                            shapes[j].style.strokeWidth = '';
+                        }
+                    }
+                }
+                var paths = document.querySelectorAll('.edgePath path');
+                for (var i = 0; i < paths.length; i++) {
+                    paths[i].style.stroke = '';
+                    paths[i].style.strokeWidth = '';
+                }
+                var cards = document.querySelectorAll('.route-card');
+                for (var i = 0; i < cards.length; i++) cards[i].classList.remove('highlighted');
+            });
+
+            // ===== STORE ORIGINAL STYLES =====
+            var allNodes = document.querySelectorAll('.node');
+            for (var i = 0; i < allNodes.length; i++) {
+                var shapes = allNodes[i].querySelectorAll('rect, polygon, circle');
+                if (shapes.length > 0) {
+                    var cs = window.getComputedStyle(shapes[0]);
+                    originalEdgeStyles[allNodes[i].id] = cs.stroke || '#333';
+                }
+            }
+
+            // ===== NODE CLICK =====
+            for (var i = 0; i < allNodes.length; i++) {
+                (function(node) {
+                    node.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        var shapes = node.querySelectorAll('rect, polygon, circle');
+                        for (var s = 0; s < shapes.length; s++) {
+                            shapes[s].style.stroke = selectedColor;
+                            shapes[s].style.strokeWidth = '3.5px';
+                        }
+                        var cards = document.querySelectorAll('.route-card');
+                        for (var c = 0; c < cards.length; c++) {
+                            cards[c].classList.remove('highlighted');
+                            if (cards[c].getAttribute('data-route') === node.id) {
+                                cards[c].classList.add('highlighted');
+                                cards[c].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            }
+                        }
+                    });
+                })(allNodes[i]);
+            }
+
+            // ===== EDGE CLICK =====
+            var edgePaths = document.querySelectorAll('.edgePath path');
+            for (var i = 0; i < edgePaths.length; i++) {
+                (function(path) {
+                    path.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        path.style.stroke = selectedColor;
+                        path.style.strokeWidth = '3.5px';
+                    });
+                })(edgePaths[i]);
+            }
+
+            // ===== ZOOM =====
+            function updateZoom() {
+                mainInner.style.transform = 'scale(' + (currentZoom / 100) + ')';
+                zoomLevelEl.textContent = currentZoom + '%';
+            }
+            document.getElementById('zoomIn').addEventListener('click', function() {
+                if (currentZoom < MAX_ZOOM) { currentZoom = Math.min(currentZoom + ZOOM_STEP, MAX_ZOOM); updateZoom(); }
+            });
+            document.getElementById('zoomOut').addEventListener('click', function() {
+                if (currentZoom > MIN_ZOOM) { currentZoom = Math.max(currentZoom - ZOOM_STEP, MIN_ZOOM); updateZoom(); }
+            });
+            document.getElementById('zoomFit').addEventListener('click', function() {
+                currentZoom = 100; updateZoom();
+                viewport.scrollTo({ top: 0, left: 0 });
+            });
+
+            // ===== SPACEBAR PAN =====
+            var isPanning = false;
+            var panStartX = 0;
+            var panStartY = 0;
+            var spaceHeld = false;
+
+            document.addEventListener('keydown', function(e) {
+                if (e.code === 'Space' && !spaceHeld) {
+                    e.preventDefault();
+                    spaceHeld = true;
+                    viewport.classList.add('pan-mode');
+                }
+            });
+
+            document.addEventListener('keyup', function(e) {
+                if (e.code === 'Space') {
+                    spaceHeld = false;
+                    isPanning = false;
+                    viewport.classList.remove('pan-mode', 'grabbing');
+                }
+            });
+
+            viewport.addEventListener('mousedown', function(e) {
+                if (spaceHeld && e.button === 0) {
+                    e.preventDefault();
+                    isPanning = true;
+                    panStartX = e.clientX;
+                    panStartY = e.clientY;
+                    viewport.classList.add('grabbing');
+                }
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (!isPanning) return;
+                var dx = e.clientX - panStartX;
+                var dy = e.clientY - panStartY;
+                viewport.scrollLeft -= dx;
+                viewport.scrollTop -= dy;
+                panStartX = e.clientX;
+                panStartY = e.clientY;
+            });
+
+            document.addEventListener('mouseup', function() {
+                if (isPanning) {
+                    isPanning = false;
+                    viewport.classList.remove('grabbing');
+                }
+            });
+
+            // Prevent space from scrolling viewport
+            window.addEventListener('keydown', function(e) {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
