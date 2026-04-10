@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infografía: Workflow para crear un ITS</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+:root {
+    /* Paleta Modo Claro */
+    --bg-main: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --card-bg: #ffffff;
+    --text-primary: #333333;
+    --text-secondary: #666666;
+    --item-bg: #f8f9fa;
+    --border-color: #667eea;
+    --shadow: rgba(0,0,0,0.2);
+}
+
+body.dark-mode {
+    --bg-main: #0f172a; /* Azul muy oscuro, más profundo que el gris */
+    --card-bg: #1e293b;
+    --text-primary: #f8fafc; /* Blanco casi puro */
+    --text-secondary: #cbd5e1; /* Gris claro para lectura larga */
+    --item-bg: #334155;
+    --border-color: #818cf8;
+    --shadow: rgba(0,0,0,0.4);
+}
+
+body {
+    background: var(--bg-main) !important;
+    color: var(--text-primary);
+    transition: background 0.3s, color 0.3s;
+}
+
+.phase-card, .mermaid-container, .explicacion-section, .timeline-content {
+    background: var(--card-bg) !important;
+    color: var(--text-primary);
+    box-shadow: 0 10px 30px var(--shadow) !important;
+}
+
+.step-item {
+    background: var(--item-bg) !important;
+}
+
+.phase-title, .explicacion-title, .mermaid-title, .arch-card h3 {
+    color: var(--text-primary) !important;
+}
+
+.phase-subtitle, .step-item p, .explicacion-content, .arch-card p {
+    color: var(--text-secondary) !important;
+}
+
+/* Switch de Modo Oscuro */
+.theme-switch-wrapper {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    z-index: 1000;
+    background: var(--card-bg);
+    padding: 10px 15px;
+    border-radius: 30px;
+    box-shadow: 0 4px 10px var(--shadow);
+}
+
+.theme-switch {
+    display: inline-block;
+    height: 24px;
+    position: relative;
+    width: 44px;
+    margin-left: 10px;
+}
+
+.theme-switch input { display: none; }
+
+.slider {
+    background-color: #ccc;
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    background-color: white;
+    bottom: 4px;
+    content: "";
+    height: 16px;
+    left: 4px;
+    position: absolute;
+    transition: .4s;
+    width: 16px;
+    border-radius: 50%;
+}
+
+input:checked + .slider { background-color: #bb86fc; }
+input:checked + .slider:before { transform: translateX(20px); }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #f0e6ff;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+        }
+
+        .phase-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phase-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+        }
+
+        .phase-1::before { background: linear-gradient(90deg, #FF6B6B, #FF8E53); }
+        .phase-2::before { background: linear-gradient(90deg, #4ECDC4, #44B09E); }
+        .phase-3::before { background: linear-gradient(90deg, #667eea, #764ba2); }
+        .phase-4::before { background: linear-gradient(90deg, #f093fb, #f5576c); }
+        .phase-5::before { background: linear-gradient(90deg, #4facfe, #00f2fe); }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .phase-number {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .phase-1 .phase-number { background: linear-gradient(135deg, #FF6B6B, #FF8E53); }
+        .phase-2 .phase-number { background: linear-gradient(135deg, #4ECDC4, #44B09E); }
+        .phase-3 .phase-number { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .phase-4 .phase-number { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .phase-5 .phase-number { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+
+        .phase-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .phase-subtitle {
+            color: #666;
+            font-size: 1em;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .step-item {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .step-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .phase-1 .step-item { border-left-color: #FF6B6B; }
+        .phase-2 .step-item { border-left-color: #4ECDC4; }
+        .phase-3 .step-item { border-left-color: #667eea; }
+        .phase-4 .step-item { border-left-color: #f093fb; }
+        .phase-5 .step-item { border-left-color: #4facfe; }
+
+        .step-item h4 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .step-item p {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .step-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .mermaid-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .mermaid-title {
+            text-align: center;
+            color: #333;
+            font-size: 1.8em;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .architecture-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .arch-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .arch-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .arch-card p {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .arch-card .tech-stack {
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .tech-tag {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, #FF6B6B, #4ECDC4, #667eea, #f093fb, #4facfe);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row;
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-content {
+            flex: 1;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content {
+            margin-right: 40px;
+            text-align: right;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-left: 40px;
+            text-align: left;
+        }
+
+        .timeline-dot {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            border: 4px solid #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #667eea;
+            flex-shrink: 0;
+            z-index: 1;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            padding: 20px;
+            font-size: 1.1em;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+
+        /* Estilos para el sistema de anclaje tipo Wikipedia */
+        #diagrama-section {
+            scroll-margin-top: 20px;
+        }
+
+        .explicacion-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            scroll-margin-top: 20px;
+            border-left: 6px solid;
+            position: relative;
+        }
+
+        .explicacion-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            z-index: -1;
+        }
+
+        .explicacion-section.exp-phase-1 { border-left-color: #FF6B6B; }
+        .explicacion-section.exp-phase-2 { border-left-color: #4ECDC4; }
+        .explicacion-section.exp-phase-3 { border-left-color: #667eea; }
+        .explicacion-section.exp-phase-4 { border-left-color: #f093fb; }
+        .explicacion-section.exp-phase-5 { border-left-color: #4facfe; }
+        .explicacion-section.exp-arch-1 { border-left-color: #4ECDC4; }
+        .explicacion-section.exp-arch-2 { border-left-color: #44B09E; }
+        .explicacion-section.exp-arch-3 { border-left-color: #667eea; }
+        .explicacion-section.exp-arch-4 { border-left-color: #764ba2; }
+        .explicacion-section.exp-flow-a { border-left-color: #FF6B6B; }
+        .explicacion-section.exp-flow-b { border-left-color: #FF8E53; }
+        .explicacion-section.exp-flow-c { border-left-color: #4ECDC4; }
+        .explicacion-section.exp-flow-d { border-left-color: #44B09E; }
+        .explicacion-section.exp-flow-e { border-left-color: #667eea; }
+        .explicacion-section.exp-flow-f { border-left-color: #764ba2; }
+        .explicacion-section.exp-flow-g { border-left-color: #f093fb; }
+        .explicacion-section.exp-flow-h { border-left-color: #4facfe; }
+
+        .explicacion-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .explicacion-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .btn-volver {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            position: sticky;
+            top: 20px;
+            z-index: 10;
+        }
+
+        .btn-volver:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .explicacion-content {
+            color: #555;
+            line-height: 1.8;
+            font-size: 1.05em;
+        }
+
+        .explicacion-content h4 {
+            color: #333;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .explicacion-content ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        .explicacion-content li {
+            margin-bottom: 8px;
+        }
+
+        /* Estilos para nodos clicables en Mermaid */
+        .mermaid-container svg {
+            cursor: default;
+        }
+
+        .mermaid-container svg .node {
+            cursor: pointer;
+        }
+
+        .mermaid-container svg .node:hover {
+            filter: brightness(1.1);
+        }
+
+        .nav-seccion {
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .nav-seccion h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .nav-link {
+            display: block;
+            background: white;
+            padding: 12px 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #333;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid #667eea;
+        }
+
+        .nav-link:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Indicador visual de nodo clicable */
+        .node-clickable {
+            position: relative;
+        }
+
+        .node-clickable::after {
+            content: '👆';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 1.2em;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .node-clickable:hover::after {
+            opacity: 1;
+        }
+
+        /* Highlight para la sección activo */
+        .explicacion-section.active {
+            animation: highlight-pulse 2s ease-in-out;
+        }
+
+        @keyframes highlight-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.6); }
+            50% { box-shadow: 0 0 0 20px rgba(102, 126, 234, 0); }
+            100% { box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        }
+
+        @media (max-width: 768px) {
+            .timeline::before {
+                left: 25px;
+            }
+
+            .timeline-item {
+                flex-direction: row !important;
+            }
+
+            .timeline-item:nth-child(odd) .timeline-content,
+            .timeline-item:nth-child(even) .timeline-content {
+                margin-left: 20px;
+                margin-right: 0;
+                text-align: left;
+            }
+
+            .explicacion-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .btn-volver {
+                position: static;
+            }
+        }
+/* Corrección para los títulos de los pasos (Fase 1, 3, 4, 5) */
+.step-item h4 {
+    color: var(--text-primary) !important;
+}
+
+.step-item p {
+    color: var(--text-secondary) !important;
+}
+
+/* Corrección para los bloques de arquitectura (Fase 2) */
+.arch-card h3 {
+    color: var(--text-primary) !important;
+}
+
+.arch-card p {
+    color: var(--text-secondary) !important;
+}
+
+/* Ajuste de los iconos para que no se pierdan en el fondo oscuro */
+.step-icon {
+    filter: drop-shadow(0 2px 4px var(--shadow));
+}
+
+/* Etiquetas tecnológicas (Tech Tags) en modo oscuro */
+body.dark-mode .tech-tag {
+    background: linear-gradient(135deg, #818cf8, #c084fc);
+    color: #0f172a; /* Texto oscuro sobre fondo brillante para contraste */
+    font-weight: bold;
+}
+
+/* El switch de modo necesita ser legible */
+#theme-label {
+    color: var(--text-primary);
+}
+/* --- CORRECCIÓN DEFINITIVA MODO OSCURO --- */
+
+body.dark-mode .phase-card, 
+body.dark-mode .mermaid-container, 
+body.dark-mode .explicacion-section, 
+body.dark-mode .timeline-content {
+    background-color: var(--card-bg) !important;
+    background-image: none !important; /* Elimina degradados claros si los hubiera */
+    color: var(--text-primary) !important;
+}
+
+/* Corregir las tarjetas de arquitectura (Fase 2) que se ven blancas */
+body.dark-mode .arch-card {
+    background: var(--item-bg) !important; /* Cambia el degradado azul claro por un fondo oscuro */
+    border: 1px solid var(--border-color);
+}
+
+body.dark-mode .arch-card h3,
+body.dark-mode .arch-card p,
+body.dark-mode .step-item h4,
+body.dark-mode .step-item p {
+    color: var(--text-primary) !important;
+}
+
+/* Corregir los ítems de pasos (Fases 1, 3, 4, 5) */
+body.dark-mode .step-item {
+    background-color: rgba(255, 255, 255, 0.05) !important; /* Un gris muy sutil para destacar del fondo */
+    border-left-width: 5px;
+}
+
+/* Corregir la visibilidad de los Tech Tags */
+body.dark-mode .tech-stack {
+    background: rgba(0, 0, 0, 0.2) !important;
+}
+
+body.dark-mode .tech-tag {
+    background: var(--border-color) !important;
+    color: #000 !important; /* Texto oscuro sobre etiqueta brillante para legibilidad */
+    font-weight: bold;
+}
+
+/* Asegurar que los títulos de fase sean legibles */
+body.dark-mode .phase-title,
+body.dark-mode .explicacion-title {
+    color: var(--text-primary) !important;
+}
+
+body.dark-mode .phase-subtitle {
+    color: var(--text-secondary) !important;
+}
+
+/* Ajuste del botón volver para que resalte en oscuro */
+body.dark-mode .btn-volver {
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 15px rgba(187, 134, 252, 0.2);
+}
+    </style>
+</head>
+<body>
+<div class="theme-switch-wrapper">
+    <span id="theme-label" style="font-size: 0.9em; font-weight: bold;">🌙 Modo</span>
+    <label class="theme-switch" for="checkbox">
+        <input type="checkbox" id="checkbox" />
+        <div class="slider"></div>
+    </label>
+</div>
+    <div class="container">
+        <h1>🎓 Workflow para crear un ITS</h1>
+        <p class="subtitle">Sistema de Tutoría Inteligente - Guía paso a paso</p>
+
+        <!-- SECCIÓN DEL DIAGRAMA: Punto de referencia principal -->
+        <div id="diagrama-section">
+            <!-- Diagrama de flujo general -->
+            <div class="mermaid-container">
+                <h2 class="mermaid-title">🔄 Flujo General del Sistema (haz clic en cualquier bloque)</h2>
+                <div class="mermaid" id="flowchart-general">
+flowchart TD
+    A[📋 Definir Materia y Objetivos] --> B[🧠 Crear Modelo del Dominio]
+    B --> C[👤 Crear Modelo del Estudiante]
+    C --> D[📚 Diseñar Modelo Pedagógico]
+    D --> E[💻 Desarrollar Interfaz]
+    E --> F[🤖 Integrar IA/LLM]
+    F --> G[🧪 Evaluar y Testear]
+    G --> H[🚀 Deploy y Monitoreo]
+    H -->|Feedback loop| A
+
+    style A fill:#FF6B6B,color:#fff
+    style B fill:#FF8E53,color:#fff
+    style C fill:#4ECDC4,color:#fff
+    style D fill:#44B09E,color:#fff
+    style E fill:#667eea,color:#fff
+    style F fill:#764ba2,color:#fff
+    style G fill:#f093fb,color:#fff
+    style H fill:#4facfe,color:#fff
+                </div>
+            </div>
+
+            <!-- Fases detalladas -->
+            <div class="phase-card phase-1">
+                <div class="phase-header">
+                    <div class="phase-number">1</div>
+                    <div>
+                        <div class="phase-title">Planificación y Definición</div>
+                        <div class="phase-subtitle">Antes de escribir código</div>
+                    </div>
+                </div>
+                <div class="steps-grid">
+                    <div class="step-item">
+                        <div class="step-icon">🎯</div>
+                        <h4>Definir el dominio</h4>
+                        <p>¿Qué materia enseñarás? ¿Matemáticas, programación, idiomas? Delimita el alcance del conocimiento que el ITS cubrirá.</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-icon">👥</div>
+                        <h4>Perfil del estudiante</h4>
+                        <p>¿A quién va dirigido? Define nivel educativo, edad, conocimientos previos esperados.</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-icon">📊</div>
+                        <h4>Objetivos de aprendizaje</h4>
+                        <p>¿Qué debe lograr el estudiante al finalizar? Define métricas de éxito claras.</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-icon">🗺️</div>
+                        <h4>Mapa de conocimiento</h4>
+                        <p>Desglosa el tema en conceptos, prerrequisitos y relaciones. Crea un grafo de dependencias.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="phase-card phase-2">
+                <div class="phase-header">
+                    <div class="phase-number">2</div>
+                    <div>
+                        <div class="phase-title">Arquitectura del Sistema</div>
+                        <div class="phase-subtitle">Los 4 módulos fundamentales</div>
+                    </div>
+                </div>
+                <div class="architecture-grid">
+                    <div class="arch-card">
+                        <h3>📚 Modelo del Dominio</h3>
+                        <p>Todo lo que el sistema "sabe" sobre la materia. Contenidos, ejercicios, soluciones, explicaciones.</p>
+                        <div class="tech-stack">
+                            <span class="tech-tag">Base de conocimiento</span>
+                            <span class="tech-tag">Grafo conceptual</span>
+                            <span class="tech-tag">JSON/YAML</span>
+                        </div>
+                    </div>
+                    <div class="arch-card">
+                        <h3>👤 Modelo del Estudiante</h3>
+                        <p>Tracking de conocimiento, progreso, errores comunes, estilo de aprendizaje.</p>
+                        <div class="tech-stack">
+                            <span class="tech-tag">Base de datos</span>
+                            <span class="tech-tag">Analytics</span>
+                            <span class="tech-tag">Perfil dinámico</span>
+                        </div>
+                    </div>
+                    <div class="arch-card">
+                        <h3>🎓 Modelo Pedagógico</h3>
+                        <p>Estrategias de enseñanza: hints, feedback, adaptación de dificultad, spaced repetition.</p>
+                        <div class="tech-stack">
+                            <span class="tech-tag">Reglas</span>
+                            <span class="tech-tag">LLM prompts</span>
+                            <span class="tech-tag">Algoritmos</span>
+                        </div>
+                    </div>
+                    <div class="arch-card">
+                        <h3>💻 Interfaz de Usuario</h3>
+                        <p>Cómo el estudiante interactúa: chat, ejercicios visuales, dashboard de progreso.</p>
+                        <div class="tech-stack">
+                            <span class="tech-tag">React</span>
+                            <span class="tech-tag">HTML/CSS</span>
+                            <span class="tech-tag">Responsive</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="phase-card phase-3">
+                <div class="phase-header">
+                    <div class="phase-number">3</div>
+                    <div>
+                        <div class="phase-title">Desarrollo e Implementación</div>
+                        <div class="phase-subtitle">Construyendo el sistema</div>
+                    </div>
+                </div>
+                <div class="steps-grid">
+                    <div class="step-item">
+                        <div class="step-icon">⚙️</div>
+                        <h4>Backend + API</h4>
+                        <p>Python + FastAPI o Node.js. Endpoints para ejercicios, evaluación, tracking de progreso.</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-icon">🗄️</div>
+                        <h4>Base de datos</h4>
+                        <p>PostgreSQL o SQLite para usuarios, progreso, historial de interacciones, conocimiento.</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-icon">🤖</div>
+                        <h4>Integración IA</h4>
+                        <p>OpenAI API, Claude, o modelos open-source. LangChain para orquestar prompts con contexto.</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-icon">🎨</div>
+                        <h4>Frontend</h4>
+                        <p>React/Next.js o SPA vanilla. Interfaz interactiva, responsive, accesible.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="phase-card phase-4">
+                <div class="phase-header">
+                    <div class="phase-number">4</div>
+                    <div>
+                        <div class="phase-title">Pedagogía y Adaptatividad</div>
+                        <div class="phase-subtitle">Lo que hace "inteligente" al sistema</div>
+                    </div>
+                </div>
+                <div class="steps-grid">
+                    <div class="step-item">
+                        <div class="step-icon">🎯</div>
+                        <h4>Evaluación diagnóstica</h4>
+                        <p>Test inicial para determinar nivel del estudiante. Adaptar contenido según resultado.</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-icon">💡</div>
+                        <h4>Feedback inteligente</h4>
+                        <p>No solo "correcto/incorrecto". Explicar por qué, dar hints graduales, mostrar ejemplos.</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-icon">📈</div>
+                        <h4>Adaptación de dificultad</h4>
+                        <p>Subir/bajar complejidad según desempeño. Mantener al estudiante en "zona de desarrollo próximo".</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-icon">🔁</div>
+                        <h4>Spaced repetition</h4>
+                        <p>Reforzar conceptos aprendidos en intervalos óptimos para maximizar retención a largo plazo.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="phase-card phase-5">
+                <div class="phase-header">
+                    <div class="phase-number">5</div>
+                    <div>
+                        <div class="phase-title">Evaluación y Deploy</div>
+                        <div class="phase-subtitle">Lanzamiento y mejora continua</div>
+                    </div>
+                </div>
+                <div class="steps-grid">
+                    <div class="step-item">
+                        <div class="step-icon">🧪</div>
+                        <h4>Testing con usuarios</h4>
+                        <p>Pruebas piloto con estudiantes reales. Recopilar feedback, medir efectividad de aprendizaje.</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-icon">📊</div>
+                        <h4>Analytics y métricas</h4>
+                        <p>Tasa de completitud, tiempo por ejercicio, conceptos con más errores, satisfacción.</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-icon">🚀</div>
+                        <h4>Deploy</h4>
+                        <p>Railway, Render, Vercel para frontend. Supabase/AWS para backend y base de datos.</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-icon">🔄</div>
+                        <h4>Iteración continua</h4>
+                        <p>Mejorar prompts, agregar contenido, ajustar algoritmos según datos reales de uso.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diagrama de arquitectura de datos -->
+            <div class="mermaid-container">
+                <h2 class="mermaid-title">🏗️ Arquitectura de Datos</h2>
+                <div class="mermaid" id="diagrama-arquitectura">
+graph LR
+    A[Estudiante] -->|Interactúa| B[Interfaz]
+    B -->|Envía respuestas| C[API Backend]
+    C -->|Consulta| D[Modelo del Dominio]
+    C -->|Actualiza| E[Modelo del Estudiante]
+    C -->|Aplica| F[Modelo Pedagógico]
+    F -->|Genera| G[Feedback/Hints]
+    G -->|Devuelve| B
+    E -->|Tracking| H[Base de Datos]
+    D -->|Contenido| H
+
+    style A fill:#FF6B6B,color:#fff
+    style B fill:#667eea,color:#fff
+    style C fill:#764ba2,color:#fff
+    style D fill:#4ECDC4,color:#fff
+    style E fill:#44B09E,color:#fff
+    style F fill:#f093fb,color:#fff
+    style G fill:#4facfe,color:#fff
+    style H fill:#FF8E53,color:#fff
+                </div>
+            </div>
+
+            <!-- Timeline sugerido -->
+            <div class="mermaid-container">
+                <h2 class="mermaid-title">📅 Roadmap Sugerido (MVP)</h2>
+                <div class="mermaid" id="diagrama-timeline">
+gantt
+    title Fases de desarrollo del ITS
+    dateFormat  YYYY-MM-DD
+    axisFormat  %b %d
+
+    section Fase 1: Planificación
+    Definir materia y objetivos     :done,    p1, 2026-04-09, 7d
+    Mapa de conocimiento            :done,    p2, after p1, 7d
+
+    section Fase 2: Prototipo
+    Chatbot básico con LLM          :active,  pr1, after p2, 10d
+    Evaluación diagnóstica simple   :         pr2, after pr1, 7d
+
+    section Fase 3: Core del ITS
+    Modelo del dominio              :         c1, after pr2, 14d
+    Modelo del estudiante           :         c2, after pr2, 14d
+    Modelo pedagógico               :         c3, after c1, 14d
+
+    section Fase 4: Frontend
+    Interfaz de usuario             :         f1, after c1, 14d
+    Dashboard de progreso           :         f2, after f1, 7d
+
+    section Fase 5: Testing
+    Evaluación con usuarios         :         t1, after f2, 14d
+    Iteración y mejoras             :         t2, after t1, 14d
+                </div>
+            </div>
+        </div>
+        <!-- FIN de diagrama-section -->
+
+        <!-- ============================================ -->
+        <!-- SECCIONES DE EXPLICACIÓN (debajo del diagrama) -->
+        <!-- ============================================ -->
+
+        <!-- Explicación del Flujo General: Nodo A -->
+        <div id="exp-flow-a" class="explicacion-section exp-flow-a">
+            <div class="explicacion-header">
+                <h2 class="explicacion-title">📋 Definir Materia y Objetivos</h2>
+                <button type="button" class="btn-volver" data-volver>
+                    ← Volver al diagrama
+                </button>
+            </div>
+            <div class="explicacion-content">
+                <p>Este es el punto de partida fundamental. Antes de escribir una sola línea de código, necesitas tener absolutamente claro qué vas a enseñar y a quién.</p>
+                <h4>Preguntas clave:</h4>
+                <ul>
+                    <li><strong>¿Qué materia?</strong> Matemáticas, programación, idiomas, ciencias...</li>
+                    <li><strong>¿Qué alcance?</strong> ¿Básico, intermedio, avanzado? ¿Qué temas específicos cubrir?</li>
+                    <li><strong>¿Qué objetivos?</strong> ¿Qué debe poder hacer el estudiante al finalizar?</li>
+                </ul>
+                <h4>Entregables:</h4>
+                <ul>
+                    <li>Documento de alcance del proyecto</li>
+                    <li>Lista de temas y subtemas</li>
+                    <li>Objetivos de aprendizaje medibles</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Explicación del Flujo General: Nodo B -->
+        <div id="exp-flow-b" class="explicacion-section exp-flow-b">
+            <div class="explicacion-header">
+                <h2 class="explicacion-title">🧠 Crear Modelo del Dominio</h2>
+                <button type="button" class="btn-volver" data-volver>
+                    ← Volver al diagrama
+                </button>
+            </div>
+            <div class="explicacion-content">
+                <p>El modelo del dominio es TODO lo que el sistema "sabe" sobre la materia. Es tu base de conocimiento completa.</p>
+                <h4>Componentes:</h4>
+                <ul>
+                    <li><strong>Contenidos:</strong> Teorías, explicaciones, ejemplos</li>
+                    <li><strong>Ejercicios:</strong> Problemas con soluciones paso a paso</li>
+                    <li><strong>Grafo conceptual:</strong> Cómo se relacionan los temas entre sí</li>
+                    <li><strong>Prerrequisitos:</strong> Qué debes saber antes de aprender cada tema</li>
+                </ul>
+                <h4>Formatos comunes:</h4>
+                <p>JSON, YAML, bases de datos relacionales, grafos (Neo4j)</p>
+            </div>
+        </div>
+
+        <!-- Explicación del Flujo General: Nodo C -->
+        <div id="exp-flow-c" class="explicacion-section exp-flow-c">
+            <div class="explicacion-header">
+                <h2 class="explicacion-title">👤 Crear Modelo del Estudiante</h2>
+                <button type="button" class="btn-volver" data-volver>
+                    ← Volver al diagrama
+                </button>
+            </div>
+            <div class="explicacion-content">
+                <p>El modelo del estudiante es el "perfil dinámico" que el sistema construye sobre cada usuario. Es lo que permite la personalización.</p>
+                <h4>¿Qué trackea?</h4>
+                <ul>
+                    <li><strong>Conocimiento actual:</strong> ¿Qué sabe el estudiante?</li>
+                    <li><strong>Historial de errores:</strong> ¿En qué falla frecuentemente?</li>
+                    <li><strong>Velocidad de aprendizaje:</strong> ¿Qué tan rápido avanza?</li>
+                    <li><strong>Estilo preferido:</strong> ¿Visual, auditivo, kinestésico?</li>
+                    <li><strong>Motivación:</strong> ¿Qué lo mantiene engaged?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Explicación del Flujo General: Nodo D -->
+        <div id="exp-flow-d" class="explicacion-section exp-flow-d">
+            <div class="explicacion-header">
+                <h2 class="explicacion-title">📚 Diseñar Modelo Pedagógico</h2>
+                <button type="button" class="btn-volver" data-volver>
+                    ← Volver al diagrama
+                </button>
+            </div>
+            <div class="explicacion-content">
+                <p>El modelo pedagógico es el "cerebro" que decide CÓMO enseñar. Es lo que diferencia un ITS de un simple quiz app.</p>
+                <h4>Estrategias clave:</h4>
+                <ul>
+                    <li><strong>Spaced repetition:</strong> Repasar en intervalos óptimos</li>
+                    <li><strong>Feedback adaptativo:</strong> No solo "correcto/incorrecto"</li>
+                    <li><strong>Hints graduales:</strong> Pistas que no spoilean la respuesta</li>
+                    <li><strong>Adaptación de dificultad:</strong> Mantener en la "zona de desarrollo próximo"</li>
+                    <li><strong>Scaffolding:</strong> Andamiaje que se retira gradualmente</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Explicación del Flujo General: Nodo E -->
+        <div id="exp-flow-e" class="explicacion-section exp-flow-e">
+            <div class="explicacion-header">
+                <h2 class="explicacion-title">💻 Desarrollar Interfaz</h2>
+                <button type="button" class="btn-volver" data-volver>
+                    ← Volver al diagrama
+                </button>
+            </div>
+            <div class="explicacion-content">
+                <p>La interfaz es donde el estudiante interactúa con el sistema. Debe ser intuitiva, atractiva y accesible.</p>
+                <h4>Elementos esenciales:</h4>
+                <ul>
+                    <li><strong>Chat o diálogo:</strong> Comunicación natural con el ITS</li>
+                    <li><strong>Ejercicios interactivos:</strong> Drag & drop, inputs, quizzes</li>
+                    <li><strong>Dashboard de progreso:</strong> Visualización de avance</li>
+                    <li><strong>Responsive:</strong> Funciona en móvil, tablet, desktop</li>
+                </ul>
+                <h4>Tech stack sugerido:</h4>
+                <p>React/Next.js, Vue, o incluso SPA vanilla JS con HTML/CSS</p>
+            </div>
+        </div>
+
+        <!-- Explicación del Flujo General: Nodo F -->
+        <div id="exp-flow-f" class="explicacion-section exp-flow-f">
+            <div class="explicacion-header">
+                <h2 class="explicacion-title">🤖 Integrar IA/LLM</h2>
+                <button type="button" class="btn-volver" data-volver>
+                    ← Volver al diagrama
+                </button>
+            </div>
+            <div class="explicacion-content">
+                <p>La IA es lo que hace "inteligente" al sistema. Permite generar feedback personalizado, hints, explicaciones y adaptar el contenido.</p>
+                <h4>Opciones de IA:</h4>
+                <ul>
+                    <li><strong>OpenAI API (GPT-4):</strong> Potente pero con costo</li>
+                    <li><strong>Claude (Anthropic):</strong> Excelente para razonamiento</li>
+                    <li><strong>Modelos open-source:</strong> Llama, Mistral, etc. (self-hosted)</li>
+                    <li><strong>LangChain:</strong> Framework para orquestar prompts con contexto</li>
+                </ul>
+                <h4>Usos principales:</h4>
+                <ul>
+                    <li>Generar ejercicios dinámicamente</li>
+                    <li>Explicar errores de forma constructiva</li>
+                    <li>Adaptar el lenguaje al nivel del estudiante</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Explicación del Flujo General: Nodo G -->
+        <div id="exp-flow-g" class="explicacion-section exp-flow-g">
+            <div class="explicacion-header">
+                <h2 class="explicacion-title">🧪 Evaluar y Testear</h2>
+                <button type="button" class="btn-volver" data-volver>
+                    ← Volver al diagrama
+                </button>
+            </div>
+            <div class="explicacion-content">
+                <p>Antes de lanzar, necesitas validar que el sistema realmente enseña efectivamente.</p>
+                <h4>Tipos de testing:</h4>
+                <ul>
+                    <li><strong>Testing funcional:</strong> ¿Todo funciona sin bugs?</li>
+                    <li><strong>Testing pedagógico:</strong> ¿Los estudiantes realmente aprenden?</li>
+                    <li><strong>Testing de usabilidad:</strong> ¿La interfaz es intuitiva?</li>
+                    <li><strong>Prueba piloto:</strong> Con 10-20 estudiantes reales</li>
+                </ul>
+                <h4>Métricas a medir:</h4>
+                <ul>
+                    <li>Tasa de completitud de ejercicios</li>
+                    <li>Tiempo promedio por ejercicio</li>
+                    <li>Conceptos con mayor tasa de error</li>
+                    <li>Satisfacción del estudiante (encuesta)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Explicación del Flujo General: Nodo H -->
+        <div id="exp-flow-h" class="explicacion-section exp-flow-h">
+            <div class="explicacion-header">
+                <h2 class="explicacion-title">🚀 Deploy y Monitoreo</h2>
+                <button type="button" class="btn-volver" data-volver>
+                    ← Volver al diagrama
+                </button>
+            </div>
+            <div class="explicacion-content">
+                <p>Lanzar el sistema a producción y monitorear su funcionamiento en el mundo real.</p>
+                <h4>Plataformas de deploy:</h4>
+                <ul>
+                    <li><strong>Frontend:</strong> Vercel, Netlify, Render</li>
+                    <li><strong>Backend:</strong> Railway, Render, AWS, Google Cloud</li>
+                    <li><strong>Base de datos:</strong> Supabase, Neon, AWS RDS</li>
+                </ul>
+                <h4>Monitoreo continuo:</h4>
+                <ul>
+                    <li>Analytics de uso (Google Analytics, Plausible)</li>
+                    <li>Logs de errores (Sentry)</li>
+                    <li>Performance del sistema</li>
+                    <li>Feedback de usuarios para iterar</li>
+                </ul>
+                <p><strong>Recuerda:</strong> El feedback loop te devuelve a la fase de planificación para mejorar continuamente.</p>
+            </div>
+        </div>
+
+        <!-- Explicación Arquitectura: Estudiante -->
+        <div id="exp-arch-1" class="explicacion-section exp-arch-1">
+            <div class="explicacion-header">
+                <h2 class="explicacion-title">👤 Estudiante (Arquitectura de Datos)</h2>
+                <button type="button" class="btn-volver" data-volver>
+                    ← Volver al diagrama
+                </button>
+            </div>
+            <div class="explicacion-content">
+                <p>El estudiante es el punto de partida de todo el flujo de datos. Cada interacción que realiza genera información que el sistema utiliza para personalizar la experiencia.</p>
+                <h4>Datos que genera:</h4>
+                <ul>
+                    <li>Respuestas a ejercicios</li>
+                    <li>Tiempo dedicado a cada tema</li>
+                    <li>Patrones de error</li>
+                    <li>Preferencias de aprendizaje</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Explicación Arquitectura: Interfaz -->
+        <div id="exp-arch-2" class="explicacion-section exp-arch-2">
+            <div class="explicacion-header">
+                <h2 class="explicacion-title">💻 Interfaz (Arquitectura de Datos)</h2>
+                <button type="button" class="btn-volver" data-volver>
+                    ← Volver al diagrama
+                </button>
+            </div>
+            <div class="explicacion-content">
+                <p>La interfaz actúa como intermediario entre el estudiante y el backend. Recibe las acciones del usuario y las traduce en requests al API.</p>
+                <h4>Responsabilidades:</h4>
+                <ul>
+                    <li>Renderizar ejercicios y contenidos</li>
+                    <li>Capturar respuestas del estudiante</li>
+                    <li>Mostrar feedback y hints</li>
+                    <li>Visualizar progreso</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Explicación Arquitectura: API Backend -->
+        <div id="exp-arch-3" class="explicacion-section exp-arch-3">
+            <div class="explicacion-header">
+                <h2 class="explicacion-title">⚙️ API Backend (Arquitectura de Datos)</h2>
+                <button type="button" class="btn-volver" data-volver>
+                    ← Volver al diagrama
+                </button>
+            </div>
+            <div class="explicacion-content">
+                <p>El backend es el cerebro operativo. Recibe requests, consulta los modelos, y genera respuestas.</p>
+                <h4>Endpoints típicos:</h4>
+                <ul>
+                    <li><code>GET /ejercicios</code> - Obtener ejercicio según nivel</li>
+                    <li><code>POST /respuesta</code> - Enviar respuesta para evaluación</li>
+                    <li><code>GET /progreso</code> - Obtener estadísticas del estudiante</li>
+                    <li><code>POST /feedback</code> - Generar feedback con IA</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Explicación Arquitectura: Modelo del Dominio -->
+        <div id="exp-arch-4" class="explicacion-section exp-arch-4">
+            <div class="explicacion-header">
+                <h2 class="explicacion-title">📚 Modelo del Dominio (Arquitectura de Datos)</h2>
+                <button type="button" class="btn-volver" data-volver>
+                    ← Volver al diagrama
+                </button>
+            </div>
+            <div class="explicacion-content">
+                <p>Contiene toda la estructura de conocimiento de la materia. El backend lo consulta para saber qué ejercicio enviar, cómo evaluar, y qué contenido mostrar.</p>
+                <h4>Estructura típica:</h4>
+                <ul>
+                    <li>Grafo de conceptos y prerrequisitos</li>
+                    <li>Banco de ejercicios con soluciones</li>
+                    <li>Explicaciones y ejemplos por tema</li>
+                    <li>Rubricas de evaluación</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            🎓 Un ITS combina IA + Pedagogía + Tecnología para personalizar la educación
+        </div>
+    </div>
+
+<script>
+    // Configuración de Mermaid
+    mermaid.initialize({
+        startOnLoad: true,
+        securityLevel: 'loose', // Permite interacción con el DOM del SVG
+        theme: 'base',
+        themeVariables: {
+            primaryColor: '#e8eaf6',
+            primaryTextColor: '#333',
+            primaryBorderColor: '#667eea',
+            lineColor: '#667eea',
+            secondaryColor: '#f3e5f5',
+            tertiaryColor: '#e0f2f1'
+        },
+        fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif'
+    });
+
+    // Variable global para recordar dónde estaba el usuario en el diagrama
+    let posicionPreviaDiagrama = 0;
+
+    /**
+     * Navegación suave y resaltado
+     */
+    function navegarAExplicacion(idDestino) {
+        const elemento = document.getElementById(idDestino);
+        if (elemento) {
+            // Guardamos la posición actual ANTES de movernos
+            posicionPreviaDiagrama = window.scrollY;
+            
+            elemento.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // Efecto visual de resaltado
+            elemento.classList.add('active');
+            setTimeout(() => {
+                elemento.classList.remove('active');
+            }, 2000);
+        }
+    }
+
+    /**
+     * Mapeo de textos de los nodos a IDs de secciones
+     */
+    const mapaNodos = [
+        { texto: 'Definir Materia', destino: 'exp-flow-a' },
+        { texto: 'Modelo del Dominio', destino: 'exp-flow-b' },
+        { texto: 'Modelo del Estudiante', destino: 'exp-flow-c' },
+        { texto: 'Modelo Pedagógico', destino: 'exp-flow-d' },
+        { texto: 'Desarrollar Interfaz', destino: 'exp-flow-e' },
+        { texto: 'Integrar IA', destino: 'exp-flow-f' },
+        { texto: 'Evaluar y Testear', destino: 'exp-flow-g' },
+        { texto: 'Deploy y Monitoreo', destino: 'exp-flow-h' },
+        // Mapeos para el diagrama de arquitectura
+        { texto: 'Estudiante', destino: 'exp-arch-1' },
+        { texto: 'Interfaz', destino: 'exp-arch-2' },
+        { texto: 'API Backend', destino: 'exp-arch-3' }
+    ];
+
+    /**
+     * Configura la escucha de eventos por delegación
+     */
+    function inicializarInteraccion() {
+// Lógica del Switch de Modo Oscuro
+const toggleSwitch = document.querySelector('#checkbox');
+const currentTheme = localStorage.getItem('theme');
+
+if (currentTheme) {
+    document.body.classList.add(currentTheme);
+    if (currentTheme === 'dark-mode') {
+        toggleSwitch.checked = true;
+    }
+}
+
+toggleSwitch.addEventListener('change', (e) => {
+    if (e.target.checked) {
+        document.body.classList.add('dark-mode');
+        localStorage.setItem('theme', 'dark-mode');
+        // Opcional: Re-renderizar Mermaid con tema oscuro si fuera necesario
+    } else {
+        document.body.classList.remove('dark-mode');
+        localStorage.setItem('theme', 'light-mode');
+    }
+});
+
+        // Usamos delegación de eventos en el body para capturar clics en SVGs dinámicos
+        document.body.addEventListener('click', (e) => {
+            // Buscamos si el clic fue en un nodo de Mermaid (.node)
+            const nodo = e.target.closest('.node');
+            if (!nodo) return;
+
+            // Extraemos el texto dentro del nodo para saber a dónde ir
+            const textoNodo = nodo.textContent.trim();
+            
+            // Buscamos coincidencia en nuestro mapa
+            const coincidencia = mapaNodos.find(m => 
+                textoNodo.toLowerCase().includes(m.texto.toLowerCase())
+            );
+
+            if (coincidencia) {
+                navegarAExplicacion(coincidencia.destino);
+            }
+        });
+
+        // Configurar botones de "Volver"
+        document.querySelectorAll('[data-volver]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.scrollTo({
+                    top: posicionPreviaDiagrama,
+                    behavior: 'smooth'
+                });
+            });
+        });
+    }
+
+    // Ejecutar cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', inicializarInteraccion);
+
+    // Debido a que Mermaid renderiza después del DOMContentLoaded, 
+    // forzamos una clase CSS para mostrar que son clicables
+    const style = document.createElement('style');
+    style.innerHTML = '.node { cursor: pointer !important; transition: opacity 0.2s; } .node:hover { opacity: 0.8; }';
+    document.head.appendChild(style);
+</script>
+
+</body>
+</html>
